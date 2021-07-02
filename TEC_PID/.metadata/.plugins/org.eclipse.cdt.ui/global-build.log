@@ -1,0 +1,14 @@
+12:49:57 **** Incremental Build of configuration Debug for project TEC_PID ****
+make -j4 all 
+arm-none-eabi-size   TEC_PID.elf 
+   text	   data	    bss	    dec	    hex	filename
+  19144	    124	   1732	  21000	   5208	TEC_PID.elf
+Finished building: default.size.stdout
+ 
+12:50:01 **** Incremental Build of configuration Debug for project TEC_PID ****
+make -j4 all 
+arm-none-eabi-size   TEC_PID.elf 
+   text	   data	    bss	    dec	    hex	filename
+  19144	    124	   1732	  21000	   5208	TEC_PID.elf
+Finished building: default.size.stdout
+ 
