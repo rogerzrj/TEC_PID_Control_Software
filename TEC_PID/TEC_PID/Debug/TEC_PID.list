@@ -1215,8 +1215,8 @@ int main(void)
  8000edc:	f04f 0300 	mov.w	r3, #0
  8000ee0:	64bb      	str	r3, [r7, #72]	; 0x48
 
-	float control_sig              ; // Full Control Signal
-	float control_sig_bounded      ; // Control Signal bounded between 0 and 3.3 to avoid wrap-around
+	float    control_sig           ; // Full Control Signal
+	float    control_sig_bounded   ; // Control Signal bounded between 0 and 3.3 to avoid wrap-around
 	uint32_t control_sig_Digitised ; // Control Signal Scaled to Digital Value for DAC
 
 	float temp_Setpoint = 32.0 ; // Temperature Setpoint
@@ -1391,7 +1391,7 @@ int main(void)
  8001056:	613b      	str	r3, [r7, #16]
 	  // Calculations Required to Map Read Voltage to a Temperature
 
-	  temp_err          = actual_Temp - temp_Setpoint ;  // Calculate Temperature Error
+	  temp_err = actual_Temp - temp_Setpoint ;  // Calculate Temperature Error
  8001058:	ed97 7a04 	vldr	s14, [r7, #16]
  800105c:	edd7 7a09 	vldr	s15, [r7, #36]	; 0x24
  8001060:	ee77 7a67 	vsub.f32	s15, s14, s15

@@ -1,4 +1,4 @@
-09:08:08 **** Incremental Build of configuration Debug for project TEC_PID ****
+09:33:33 **** Incremental Build of configuration Debug for project TEC_PID ****
 make -j4 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 arm-none-eabi-gcc -o "TEC_PID.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\KenechukwuEzeonyim\Documents\GitHub\TEC_PID_Control_Software\TEC_PID\TEC_PID\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="TEC_PID.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
@@ -16,5 +16,5 @@ Finished building: TEC_PID.bin
 Finished building: TEC_PID.list
  
 
-09:08:10 Build Finished. 0 errors, 0 warnings. (took 2s.49ms)
+09:33:35 Build Finished. 0 errors, 0 warnings. (took 1s.514ms)
 

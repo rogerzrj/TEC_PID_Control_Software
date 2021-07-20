@@ -140,7 +140,7 @@ int main(void)
 	  actual_Temp = (1/actual_Temp_Inv) - 273.15                            ; // Calculate actual Temperature and Convert to Degrees Celcius
 	  // Calculations Required to Map Read Voltage to a Temperature
 
-	  temp_err          = actual_Temp - temp_Setpoint ;  // Calculate Temperature Error
+	  temp_err = actual_Temp - temp_Setpoint ;  // Calculate Temperature Error
 	  HAL_Delay(10) ;
 
 	  ctrl_Proportional = temp_err                                   ; // Proportional Control Signal

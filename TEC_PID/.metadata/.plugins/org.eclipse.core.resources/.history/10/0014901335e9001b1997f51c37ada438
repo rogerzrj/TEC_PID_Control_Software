@@ -73,20 +73,29 @@ static void MX_USART2_UART_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+	// Constants Needed for Calculations
 	double A = 0.001128 ;
 	double B = 2.345e-4 ;
-	double C = 8.73e-8 ;
+	double C = 8.73e-8  ;
+	// Constants Needed for Calculations
 
-	uint16_t actual_Volt_Digitised ;
-	float actual_Volt_Analog ;
-	float actual_Res ;
-	float actual_Temp ;
+	uint16_t actual_Volt_Digitised ; // Raw Digital Value Obtained from the ADC which Reads the Thermistor Voltage
+	float    actual_Volt_Analog    ; // Digital Value Scaled down to a Float equal to the Magnitude of the Read Voltage
+	float    actual_Res            ; // Thermistor Resistance Corresponding to the Measured Voltage
+	float    actual_Temp_Inv       ; // Inverse of the Temperature COrresponding to the THermistor Resistance (in Kelvin)
+	float    actual_Temp           ; // Temperature COrresponding to the Thermistor Resistance (in Degrees Celcius)
 
-	float temp_diff ;
-	float control_Volt_Analog ;
-	uint32_t control_Volt_Digitised ;
+	float temp_err ; // Difference between Measured Temperature and Temperature Setpoint
+	float prev_err ; // Value of 'temp_err' at previous Iteration of the Control Signal
 
-	float temp_Setpoint = 25.0 ;
+	float ctrl_Proportional   ; // Proportional Control Signal
+	float ctrl_Integral = 0.0 ; // Integral Control Signal (Initialised to Zero)
+
+	float    control_sig           ; // Full Control Signal
+	float    control_sig_bounded   ; // Control Signal bounded between 0 and 3.3 to avoid wrap-around
+	uint32_t control_sig_Digitised ; // Control Signal Scaled to Digital Value for DAC
+
+	float temp_Setpoint = 32.0 ; // Temperature Setpoint
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -95,8 +104,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  HAL_ADC_Start(&hadc1) ;
-  HAL_DAC_Start(&hdac, DAC_CHANNEL_1) ;
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -112,26 +120,53 @@ int main(void)
   MX_DAC_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_DAC_Start(&hdac, DAC_CHANNEL_1) ;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  // Read Voltage Across Thermistor
+	  HAL_ADC_Start(&hadc1) ;
 	  HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) ;
 	  actual_Volt_Digitised = HAL_ADC_GetValue(&hadc1) ;
+	  // Read Voltage Across Thermistor
 
-	  actual_Volt_Analog = (actual_Volt_Digitised/4096)*3.3 ;
-	  actual_Res = (actual_Volt_Analog/(5.0-actual_Volt_Analog))*10000 ;
-	  actual_Temp = A + B*log(actual_Res) + C*pow(log(actual_Res), 3.0) ;
+	  // Calculations Required to Map Read Volatge to a Temperature
+	  actual_Volt_Analog = (actual_Volt_Digitised/4096.0)*3.3               ; // Scale Digital Voltage Reading
+	  actual_Res = (actual_Volt_Analog/(5.0-actual_Volt_Analog))*10000      ; // Calculate Thermistor Resistance
+	  actual_Temp_Inv = A + B*log(actual_Res) + C*pow(log(actual_Res), 3.0) ; // Calculate Inverse of Corresponding Temperature
+	  actual_Temp = (1/actual_Temp_Inv) - 273.15                            ; // Calculate actual Temperature and Convert to Degrees Celcius
+	  // Calculations Required to Map Read Voltage to a Temperature
 
-	  temp_diff = actual_Temp - temp_Setpoint ;
+	  temp_err          = actual_Temp - temp_Setpoint ;  // Calculate Temperature Error
+	  HAL_Delay(10) ;
 
-	  control_Volt_Analog = 0.5 ;
-	  control_Volt_Digitised = control_Volt_Analog*(0xfff+1)/3.3 ;
+	  ctrl_Proportional = temp_err                                   ; // Proportional Control Signal
+	  ctrl_Integral     = ctrl_Integral + 0.05*(temp_err + prev_err) ; // Integral Control Signal
 
-	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, control_Volt_Digitised) ;
+	  control_sig = (ctrl_Proportional+ctrl_Integral)/(2.8) ; // Calculate Value of Control Signal
+
+	  // Bound the Control Voltage between 0 and 3.3 to avoid Wrap-around
+	  if (control_sig > 3.0) {
+		  control_sig_bounded = 3.0 ;
+	  }
+	  else if (control_sig < 0.1) {
+		  control_sig_bounded = 0.0 ;
+	  }
+	  else {
+		  control_sig_bounded = control_sig ;
+	  }
+	  // Bound the Control SIgnal between 0 and 3.3 to avoid Wrap-around
+
+	  control_sig_Digitised = control_sig_bounded*(0xfff+1)/3.3 ; // Scale the Control Signal back up to a Raw Digital Value for the DAC
+
+	  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, control_sig_Digitised) ; // Output Analogue Voltage top COntrol TEC Current
+
+	  HAL_Delay(1000) ;
+
+	  prev_err = temp_err ; // Store the Value of 'temp_err' that was just Used
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
