@@ -61,8 +61,8 @@ all: main-build
 main-build: TEC_PID.elf secondary-outputs
 
 # Tool invocations
-TEC_PID.elf: $(OBJS) $(USER_OBJS) C:\Users\KenechukwuEzeonyim\Desktop\TEC_PID\TEC_PID\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "TEC_PID.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\KenechukwuEzeonyim\Desktop\TEC_PID\TEC_PID\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="TEC_PID.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+TEC_PID.elf: $(OBJS) $(USER_OBJS) C:\Users\KenechukwuEzeonyim\Documents\GitHub\TEC_PID_Control_Software\TEC_PID\TEC_PID\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "TEC_PID.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\KenechukwuEzeonyim\Documents\GitHub\TEC_PID_Control_Software\TEC_PID\TEC_PID\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="TEC_PID.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
